@@ -1,0 +1,1 @@
+DB_URL:str ="mysql+pymysql://root:rootpw@localhost/fastapi?charset=utf8mb4"

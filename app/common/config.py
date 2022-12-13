@@ -1,7 +1,6 @@
 from dataclasses import dataclass, asdict
 from os import path, environ
 
-
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 print(base_dir)
 
@@ -16,11 +15,14 @@ class Config:
 
 @dataclass
 class LocalConfig(Config):
-    PROJ_RELOAD : bool = True
+    PROJ_RELOAD : bool = False
+    DB_URL:str ="mysql+pymysql://root:rootpw@localhost/fastapi?charset=utf8mb4"
+
 
 @dataclass
 class ProdConfig(Config):
-    PROJ_RELOAD: bool = False
+    PROJ_RELOAD: bool = True
+
 
 def conf():
     """
@@ -32,4 +34,3 @@ def conf():
 
 #딕셔너리로 변환해준다 => 클래스의 속성들을
 #{'DB_POOL_RECYCLE': 900, 'DB_ECHO': True, 'PROJ_RELOAD': False}
-#print(asdict(ProdConfig()))

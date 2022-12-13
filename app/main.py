@@ -1,9 +1,10 @@
 from typing import Optional
-
+from dataclasses import dataclass, asdict
 from fastapi import FastAPI
 from app.common.config import conf
 import uvicorn
-
+from app.database.conn import db
+from app.router import index
 
 def create_app():
     """
@@ -13,8 +14,11 @@ def create_app():
 
     c = conf()
     app = FastAPI()
+    conf_dict = asdict(c)
 
+    print(conf_dict)
     #데이터베이스 init
+    db.init_app(app, **conf_dict)
 
     #레이디 init
 
@@ -22,10 +26,10 @@ def create_app():
 
 
     #라우터 정의
-
+    app.include_router(index.router)
     return app
 
 app = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=8080, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
