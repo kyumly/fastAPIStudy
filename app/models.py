@@ -1,13 +1,22 @@
 from enum import Enum
 
-from pydantic.main import BaseModel
-from pydantic.networks import EmailStr
+#from pydantic import BaseModel, validator
+#from pydantic import BaseModel, validator
+from pydantic import BaseModel, validator, EmailStr
+from fastapi import HTTPException
+#from pydantic.networks import EmailStr
 
 
 class UserRegister(BaseModel):
     # pip install 'pydantic[email]'
-    email: EmailStr = None
-    pw: str = None
+    email: EmailStr
+    pw: str
+
+    @validator('pw', 'email')
+    def not_empty(cls, v):
+        if not v or not v.strip():
+            raise HTTPException(status_code=400, detail="빈값이 들어가면 안됩니다.")
+        return v
 
 
 class SnsType(str, Enum):
