@@ -17,7 +17,7 @@ def create_app():
     conf_dict = asdict(c)
 
     print(conf_dict)
-    #데이터베이스 init
+    # 데이터베이스 init
     db.init_app(app, **conf_dict)
 
     #레이디 init
@@ -32,4 +32,4 @@ def create_app():
 app = create_app()
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
+   uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)

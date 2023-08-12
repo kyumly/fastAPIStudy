@@ -2,7 +2,7 @@ from dataclasses import dataclass, asdict
 from os import path, environ
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
-print(base_dir)
+print("기본 : ", base_dir)
 
 @dataclass
 class Config:
@@ -15,12 +15,18 @@ class Config:
 
 @dataclass
 class LocalConfig(Config):
+    """
+    Local Config 파일 추가하기
+    """
     PROJ_RELOAD : bool = False
-    DB_URL:str ="mysql+pymysql://root:rootpw@localhost/fastapi?charset=utf8mb4"
+    DB_URL:str ="sqlite:///./myapi.db"
 
 
 @dataclass
 class ProdConfig(Config):
+    """
+    Prod Config 파일 추가하기
+    """
     PROJ_RELOAD: bool = True
 
 
