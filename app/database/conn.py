@@ -30,6 +30,7 @@ class SQLAlchemy:
             echo=echo,
             pool_recycle = pool_recycle,
             pool_pre_ping=True,
+            connect_args={"check_same_thread": False}
         )
         self._session = sessionmaker(
             autocommit=False, autoflush=False, bind=self._engine

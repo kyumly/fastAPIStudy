@@ -29,3 +29,11 @@ async def index(session : Session = Depends(db.session)):
     print("asd")
     return Response(f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})")
 
+
+@router.get("/index")
+async def test(session : Session = Depends(db.session)):
+    print(Users.get(id = 1, status= "active"))
+    #current_time = datetime.utcnow()
+    #print("asd")
+    #return Response(f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})")
+

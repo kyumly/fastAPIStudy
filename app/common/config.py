@@ -22,6 +22,7 @@ class LocalConfig(Config):
     DB_URL:str ="sqlite:///./myapi.db"
 
 
+
 @dataclass
 class ProdConfig(Config):
     """
