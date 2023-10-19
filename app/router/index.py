@@ -4,6 +4,8 @@ from fastapi import APIRouter, Depends
 from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from starlette.responses import Response
+from starlette.requests import Request
+
 
 
 from app.database.conn import db
@@ -36,4 +38,16 @@ async def test(session : Session = Depends(db.session)):
     #current_time = datetime.utcnow()
     #print("asd")
     #return Response(f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})")
+
+
+@router.get("/test2")
+async def index(request: Request):
+    """
+    ELB 상태 체크용 API
+    :return:
+    """
+    print("유저 정보 : ", request.state.user)
+    current_time = datetime.utcnow()
+    return Response(f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})")
+
 

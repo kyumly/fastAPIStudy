@@ -5,6 +5,7 @@ from app.common.util import create_access_token
 from app.models import SnsType, UserToken
 from app.repository.UserDAO import *
 from app import models
+
 async def user_login(sms_type : models.SnsType, user_info : models.UserRegister, session : Session):
     if sms_type == SnsType.email:
         user = get_user_email(session, user_info.email)

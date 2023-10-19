@@ -37,7 +37,7 @@ from starlette import status
 router = APIRouter()
 
 
-@router.post("/register/{sns_type}", status_code=200, response_model=Token)
+@router.post("/auth/register/{sns_tpe}", status_code=200, response_model=Token)
 async def register(sns_type: SnsType, reg_info: models.UserRegister, session: Session = Depends(db.session)):
     """
     회원가입 API
@@ -49,7 +49,7 @@ async def register(sns_type: SnsType, reg_info: models.UserRegister, session: Se
     return await user_register(sns_type, reg_info, session)
 
 
-@router.post("/login/{sns_type}", status_code=200)
+@router.post("/auth/login/{sns_type}", status_code=200)
 async def login(sns_type: SnsType, user_info : models.UserRegister, session: Session = Depends(db.session)):
     print(user_info)
     print(session)
