@@ -51,6 +51,8 @@ async def register(sns_type: SnsType, reg_info: models.UserRegister, session: Se
 
 @router.post("/login/{sns_type}", status_code=200)
 async def login(sns_type: SnsType, user_info : models.UserRegister, session: Session = Depends(db.session)):
-    return user_login(sns_type, user_info, session)
+    print(user_info)
+    print(session)
+    return await user_login(sns_type, user_info, session)
 
 

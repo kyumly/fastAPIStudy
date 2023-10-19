@@ -9,8 +9,6 @@ def create_user(db : Session, pw , user_info : dict):
     db.commit()
     return user
 
-
-
 def get_user(db : Session, id : int):
     return db.get(Users, id)
 

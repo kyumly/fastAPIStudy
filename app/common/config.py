@@ -20,6 +20,8 @@ class LocalConfig(Config):
     """
     PROJ_RELOAD : bool = False
     DB_URL:str ="sqlite:///./myapi.db"
+    ALLOW_SITE = ["*"]
+    TRUSTED_HOSTS = ["*"]
 
 
 
@@ -29,6 +31,8 @@ class ProdConfig(Config):
     Prod Config 파일 추가하기
     """
     PROJ_RELOAD: bool = True
+    ALLOW_SITE = ["*"]
+    TRUSTED_HOSTS = ["*"]
 
 
 def conf():

@@ -33,7 +33,6 @@ async def user_register(sns_type : models.SnsType, user_info : models.UserRegist
         if len(user_exist) == 0 :
             user_info_dict = user_info.dict()
             pw = user_info_dict.pop('pw')
-
             hash_pw = bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt())
             user = create_user(session, hash_pw, user_info_dict)
             token = dict(Authorization=f"Bearer {create_access_token(data=UserToken.from_orm(user).dict(exclude={'pw', 'marketing_agree'}),)}")
