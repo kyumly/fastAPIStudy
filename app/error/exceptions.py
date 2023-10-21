@@ -54,6 +54,7 @@ class NotAuthorized(APIException):
 
 class TokenExpiredEx(APIException):
     def __init__(self, ex: Exception = None):
+        print("실행중 라이즈")
         super().__init__(
             status_code=StatusCode.HTTP_400,
             msg=f"세션이 만료되어 로그아웃 되었습니다.",
@@ -62,9 +63,14 @@ class TokenExpiredEx(APIException):
             ex=ex,
         )
 
+    def __str__(self):
+        return "토큰 에러"
+
 
 class TokenDecodeEx(APIException):
     def __init__(self, ex: Exception = None):
+        print("실행중 라이즈")
+
         super().__init__(
             status_code=StatusCode.HTTP_400,
             msg=f"비정상적인 접근입니다.",
@@ -72,3 +78,6 @@ class TokenDecodeEx(APIException):
             code=f"{StatusCode.HTTP_400}{'2'.zfill(4)}",
             ex=ex,
         )
+
+    def __str__(self):
+        return "어려운 작업 진행중입니다."
