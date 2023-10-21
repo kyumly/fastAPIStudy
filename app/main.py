@@ -5,6 +5,7 @@ from fastapi.security import APIKeyHeader
 
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
+from fastapi import Depends
 
 from app.common.config import conf
 import uvicorn
@@ -13,11 +14,12 @@ from app.middlewares.token_validator import access_control
 from app.router import index, auth, users
 from app.middlewares.trusted_hosts import TrustedHostMiddleware
 
-from app.common.consts import EXCEPT_PATH_LIST,EXCEPT_PATH_REGEX
+from app.common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX
 
 API_KEY_HEADER = APIKeyHeader(
     name="Authorization", auto_error=False
 )
+
 
 def create_app():
     """
@@ -28,7 +30,6 @@ def create_app():
     c = conf()
     app = FastAPI()
     conf_dict = asdict(c)
-
     print(conf_dict)
     # 데이터베이스 init
     db.init_app(app, **conf_dict)
@@ -44,16 +45,16 @@ def create_app():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-
+    #
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=conf().TRUSTED_HOSTS, except_path=["/health"])
 
-    #라우터 정의
+    # 라우터 정의
     app.include_router(index.router)
     app.include_router(auth.router, tags=["Authentication"], prefix="/api")
-    from fastapi import Depends
     app.include_router(users.router, tags=["Users"], prefix="/api", dependencies=[Depends(API_KEY_HEADER)])
 
     return app
+
 
 app = create_app()
 

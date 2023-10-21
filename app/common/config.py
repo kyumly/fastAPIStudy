@@ -1,5 +1,6 @@
 from dataclasses import dataclass, asdict
 from os import path, environ
+from typing import List
 
 base_dir = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
 print("기본 : ", base_dir)
@@ -9,9 +10,10 @@ class Config:
     """
     기본 Configuration
     """
-    BASE_DIR = base_dir
+    BASE_DIR : str = base_dir
     DB_POOL_RECYCLE: int = 900
     DB_ECHO: bool = True
+    TEST : str = "asd"
 
 @dataclass
 class LocalConfig(Config):
@@ -19,7 +21,7 @@ class LocalConfig(Config):
     Local Config 파일 추가하기
     """
     PROJ_RELOAD : bool = False
-    DB_URL:str ="sqlite:///./myapi.db"
+    DB_URL:str =f"sqlite:///{base_dir}/myapi.db"
     ALLOW_SITE = ["*"]
     TRUSTED_HOSTS = ["*"]
 
