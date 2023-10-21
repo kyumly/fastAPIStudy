@@ -2,12 +2,14 @@ from typing import Optional
 from dataclasses import dataclass, asdict
 from fastapi import FastAPI
 from fastapi.security import APIKeyHeader
+
+from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.middleware.cors import CORSMiddleware
 
 from app.common.config import conf
 import uvicorn
 from app.database.conn import db
-from app.middlewares.token_validator import AccessControl
+from app.middlewares.token_validator import access_control
 from app.router import index, auth, users
 from app.middlewares.trusted_hosts import TrustedHostMiddleware
 
@@ -34,8 +36,7 @@ def create_app():
     #레이디 init
 
     #미들웨어 정의
-    app.add_middleware(AccessControl, except_path_list=EXCEPT_PATH_LIST, except_path_regex=EXCEPT_PATH_REGEX)
-
+    app.add_middleware(middleware_class=BaseHTTPMiddleware, dispatch=access_control)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=conf().ALLOW_SITE,
