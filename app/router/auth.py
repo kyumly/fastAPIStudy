@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import bcrypt
 import jwt
 from fastapi import APIRouter, Depends
+from starlette.requests import Request
 
 # TODO:
 from sqlalchemy.orm import Session
@@ -17,6 +18,7 @@ from app.models import SnsType, Token, UserToken
 
 from app.service.UserService import user_login, user_register
 from starlette import status
+from app.error import exceptions as ex
 
 """
 1. 구글 로그인을 위한 구글 앱 준비 (구글 개발자 도구)
@@ -38,7 +40,7 @@ router = APIRouter()
 
 
 @router.post("/auth/register/{sns_tpe}", status_code=200, response_model=Token)
-async def register(sns_type: SnsType, reg_info: models.UserRegister, session: Session = Depends(db.session)):
+async def register(request: Request, sns_type: SnsType, reg_info: models.UserRegister, session: Session = Depends(db.session)):
     """
     회원가입 API
     :param sns_type:
@@ -49,10 +51,19 @@ async def register(sns_type: SnsType, reg_info: models.UserRegister, session: Se
     return await user_register(sns_type, reg_info, session)
 
 
-@router.post("/auth/login/{sns_type}", status_code=200)
-async def login(sns_type: SnsType, user_info : models.UserRegister, session: Session = Depends(db.session)):
+@router.post("/auth/login/{sns_type}", status_code=200, response_model=Token)
+async def login(request: Request, sns_type: SnsType, user_info : models.UserRegister, session: Session = Depends(db.session)):
+    print(request)
+
+    json = await request.body()
+    print(json)
     print(user_info)
     print(session)
-    return await user_login(sns_type, user_info, session)
+    try:
+        token = await user_login(sns_type, user_info, session)
+    except Exception as e:
+        print(e)
+        raise e
+    #return token
 
 

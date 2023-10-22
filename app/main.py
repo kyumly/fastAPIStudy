@@ -45,7 +45,6 @@ def create_app():
         allow_methods=["*"],
         allow_headers=["*"],
     )
-    #
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=conf().TRUSTED_HOSTS, except_path=["/health"])
 
     # 라우터 정의

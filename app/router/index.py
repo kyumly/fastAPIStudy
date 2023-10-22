@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from sqlalchemy.orm import Session
 from starlette.responses import Response
 from starlette.requests import Request
-
+from inspect import currentframe as frame
 
 
 from app.database.conn import db
@@ -46,7 +46,13 @@ async def index(request: Request):
     ELB 상태 체크용 API
     :return:
     """
-    print("유저 정보 : ", request.state.user)
+    try:
+        a = 1/0
+        #print("유저 정보 : ", request.state.user)
+    except Exception as e:
+        #request.state.inspect = frame()
+        raise e
+
     current_time = datetime.utcnow()
     return Response(f"Notification API (UTC: {current_time.strftime('%Y.%m.%d %H:%M:%S')})")
 

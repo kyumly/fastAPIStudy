@@ -5,6 +5,7 @@ from app.common.util import create_access_token
 from app.models import SnsType, UserToken
 from app.repository.UserDAO import *
 from app import models
+from app.error import exceptions as ex
 
 async def user_login(sms_type : models.SnsType, user_info : models.UserRegister, session : Session):
     if sms_type == SnsType.email:
@@ -20,7 +21,8 @@ async def user_login(sms_type : models.SnsType, user_info : models.UserRegister,
                     msg = "패스워드가 틀렸습니다."
                 ))
         else:
-            return JSONResponse(status_code=400, content=dict(msg="NO_MATCH_USER"))
+            raise ex.TokenDecodeEx()
+            #return JSONResponse(status_code=400, content=dict(msg="NO_MATCH_USER"))
 
 
 

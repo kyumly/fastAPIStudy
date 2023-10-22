@@ -1,25 +1,31 @@
 import time
 import typing
-import jwt
 import re
 
-from app.common.consts import EXCEPT_PATH_REGEX, EXCEPT_PATH_LIST
-from app.common.logger import api_logger
-from app.error import exceptions as ex
+import jwt
 
-
-from starlette.requests import Request
-from starlette.responses import JSONResponse
+from fastapi.params import Header
 from jwt.exceptions import ExpiredSignatureError, DecodeError
+from pydantic import BaseModel
+from starlette.requests import Request
+from starlette.datastructures import URL, Headers
+from starlette.responses import JSONResponse, Response
 
+from app.common.consts import EXCEPT_PATH_LIST, EXCEPT_PATH_REGEX
+from app.error import exceptions as ex
+from starlette.types import ASGIApp, Receive, Scope, Send
+
+from app.common import config, consts
+from app.common.config import conf
 from app.error.exceptions import APIException
 from app.models import UserToken
 
 from app.common.util import D
-from app.common import consts
+from app.common.logger import api_logger
 
 
 async def access_control(request: Request, call_next):
+    print("call_netxt : ", call_next)
     request.state.req_time = D.datetime()
     request.state.start = time.time()
     request.state.inspect = None
@@ -29,17 +35,19 @@ async def access_control(request: Request, call_next):
     headers = request.headers
     cookies = request.cookies
     url = request.url.path
-    if await url_pattern_check(url, EXCEPT_PATH_REGEX) or url in EXCEPT_PATH_LIST:
-        response = await call_next(request)
-        if url != "/":
-            await api_logger(request=request, response=response)
-        return response
-
     try:
+
+        if await url_pattern_check(url, EXCEPT_PATH_REGEX) or url in EXCEPT_PATH_LIST:
+            response = await call_next(request)
+            if url != "/":
+                await api_logger(request=request, response=response)
+            return response
+
+
         if url.startswith("/api"):
             # api 인경우 헤더로 토큰 검사
             if "authorization" in headers.keys():
-                token_info = await token_decode(access_token=headers.get("authorization"))
+                token_info = await token_decode(access_token=headers.get("Authorization"))
                 request.state.user = UserToken(**token_info)
                 # 토큰 없음
             else:
@@ -47,9 +55,9 @@ async def access_control(request: Request, call_next):
                     raise ex.NotAuthorized()
         else:
             # 템플릿 렌더링인 경우 쿠키에서 토큰 검사
-            cookies["authorization"] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MTQsImVtYWlsIjoia29hbGFAZGluZ3JyLmNvbSIsIm5hbWUiOm51bGwsInBob25lX251bWJlciI6bnVsbCwicHJvZmlsZV9pbWciOm51bGwsInNuc190eXBlIjpudWxsfQ.4vgrFvxgH8odoXMvV70BBqyqXOFa2NDQtzYkGywhV48"
+            cookies["Authorization"] = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MTQsImVtYWlsIjoia29hbGFAZGluZ3JyLmNvbSIsIm5hbWUiOm51bGwsInBob25lX251bWJlciI6bnVsbCwicHJvZmlsZV9pbWciOm51bGwsInNuc190eXBlIjpudWxsfQ.4vgrFvxgH8odoXMvV70BBqyqXOFa2NDQtzYkGywhV48"
 
-            if "authorization" not in cookies.keys():
+            if "Authorization" not in cookies.keys():
                 raise ex.NotAuthorized()
 
             token_info = await token_decode(access_token=cookies.get("Authorization"))
@@ -59,7 +67,6 @@ async def access_control(request: Request, call_next):
         await api_logger(request=request, response=response)
     except Exception as e:
         error = await exception_handler(e)
-        print(error)
         error_dict = dict(status=error.status_code, msg=error.msg, detail=error.detail, code=error.code)
         response = JSONResponse(status_code=error.status_code, content=error_dict)
         await api_logger(request=request, error=error)
@@ -85,7 +92,6 @@ async def token_decode(access_token):
     except ExpiredSignatureError:
         raise ex.TokenExpiredEx()
     except DecodeError:
-
         raise ex.TokenDecodeEx()
     return payload
 
